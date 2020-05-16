@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Painel Geral - Invocador</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.css" rel="stylesheet">
+
+  <!-- versão de desenvolvimento, inclui aviso úteis no console  -->
+  <script src="js/vue.js"></script>
+</head>
+
+<body id="page-top" onload="verificaLogin(); showSidebar();">
+  <div id="app">
+    <!-- Page Wrapper -->
+    <div id="wrapper" >
+
+      <!-- Sidebar -->
+
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+          <div class="sidebar-brand-icon ">
+           <!--  <i class="fas fa-laugh-wink"></i> -->
+           <i><img src="img/hqdefault.jpg" height="50" width="50" /></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">Duo Finder</div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item" onclick="trocaModoApp('jogadoresOnline');">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Partidas Recentes</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Bora pro LOL
+        </div>
+
+        <!-- Nav Item  -->
+        <li class="nav-item" onclick="trocaModoApp('encontrarEquipe');">
+          <a class="nav-link" href="#">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Encontrar Equipe</span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick='buscarAmigos();'>
+            <i class="fas fa-fw fa-address-book"></i>
+            <span>Lista de Amigos</span>
+          </a>
+          <div id="collapseOne" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Amigos Adicionados</h6>
+              <a class="collapse-item" href="#" v-for='amigo in companheirosAdd' onclick="trocaModoAppPerfil('perfilUsuario', this)">{{amigo.amigo.league_name}}</a>
+            </div>
+          </div>
+          <!-- <div id="collapseOne" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Online</h6>
+              <a class="collapse-item" href="#">Fulando</a>
+            </div>
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Offline</h6>
+              <a class="collapse-item" href="#">Ciclano</a>
+            </div>
+          </div> -->
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Perfil
+        </div>
+
+        <!-- Nav Item - Pages Collapse Menu -->
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Configurações</span>
+          </a>
+          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+              <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Configurações de Acesso:</h6>
+              <a class="collapse-item" href="#">Alterar Senha</a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle" onclick="closeSidebar()"></button>
+        </div>
+
+      </ul>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+          <!-- Topbar -->
+          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Topbar) -->
+            <div class="col-1">
+            <i id="showSidebarBtn" onclick="showSidebar()" class="fas fa-angle-double-right "></i>
+            </div>
+
+            <button class="btn btn-light" v-on:click='alterarStatus()'>{{buttonStatus}}</button>
+            <a class='mx-3'>{{status}}</a>
+            <!-- Topbar Navbar -->
+            <a class='mx-3'>
+              Posição preferêncial para jogar:<span id='roleprincipal' v-if="button_edit"> {{role_default}}</span>
+            </a>
+            <hr2 class="col-mx-2" v-if="!button_edit">
+                <select name="role-comp" id="select-role-principal" class="custom-select">
+                  <option value="BOT">
+                    BOT
+                  </option>
+                  <option value="SUPORTE">
+                    SUPORTE
+                  </option>
+                  <option value="TOPO">
+                    TOPO
+                  </option>
+                  <option value="MEIO">
+                    MEIO
+                  </option>
+                  <option value="SELVA">
+                    SELVA
+                  </option>
+                </select>
+            </hr2>
+            <button class="btn btn-light" v-on:click="editRole()" v-if="button_edit">Editar</button>
+            <button class="btn btn-light" v-on:click="saveRole()" v-if="!button_edit">Salvar</button>
+            <button class="btn btn-light" v-on:click="editRole()" v-if="!button_edit">Cancelar</button>
+
+            <a class='mx-3'>Nota Média: {{avaliacao_user}} de 5 *</a>
+            <ul class="navbar-nav ml-auto">
+              
+
+              
+              <div class="topbar-divider d-none d-sm-block"></div>
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="mr-2 d-none d-lg-inline  small color-font-lol">{{league_name}}</span>
+                  <img class="img-profile rounded-circle" src="img/Renekton_Square_0.png" width="60" height="60">
+                </a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+
+            </ul>
+
+          </nav>
+          <!-- End of Topbar -->
+          <div v-if="modo_tela =='jogadoresOnline'">
+            <div class="col-md-4">
+            <h3>Jogadores Online: </h3>
+            <ul>
+              <li v-for="jogadores in usuariosOnline">
+                {{jogadores}}
+              </li>
+            </ul>
+            </div>
+          </div>
+          <!-- Begin Page Content -->
+          <div class="container-fluid" v-if="modo_tela == 'encontrarEquipe'">
+            <form class="">
+              <div class="input-group">
+                <span>Em qual posição você deseja jogar?</span>
+                <hr2 class="col-lg-12">
+                  <select name="role-comp" id="role-comp" class="custom-select">
+                    <option value="BOT">
+                      BOT
+                    </option>
+                    <option value="SUPORTE">
+                      SUPORTE
+                    </option>
+                    <option value="TOPO">
+                      TOPO
+                    </option>
+                    <option value="MEIO">
+                      MEIO
+                    </option>
+                    <option value="SELVA">
+                      SELVA
+                    </option>
+                  </select>
+                </hr2>
+                <label>Em qual posição você deseja que seus companheiros de equipe joguem?</label>
+                <hr2 class="col-lg-12">
+                  <div>
+                    <input type="checkbox" value="BOT" name="roles">
+                    <label for="BOT">BOT</label>
+                  </div>
+                  <div>
+                    <input type="checkbox" value="SUPORTE" name="roles">
+                    <label for="SUPORTE">SUPORTE</label>
+                  </div>
+                  <div>
+                    <input type="checkbox" value="TOPO" name="roles">
+                    <label for="TOPO">TOPO</label>
+                  </div>
+                  <div>
+                    <input type="checkbox" value="MEIO" name="roles">
+                    <label for="MEIO">MEIO</label>
+                  </div>
+                  <div>
+                    <input type="checkbox" value="SELVA" name="roles">
+                    <label for="SELVA">SELVA</label>
+                  </div>
+                </hr2>
+                <label class="col-lg-12">Defina uma faixa de nível que seus companheiros devem possuir!</label>
+
+                <hr2 class="col-lg-6">
+                <label class="">Nivel Minimo</label>
+                <input type="number" name="minLevel" id="minLevel" class="custom-select" min="1" max="10000">  
+                </hr2>
+                <hr2 class="col-lg-6">
+                  <label class="">Nivel Maximo</label>
+                <input type="number" name="maxLevel" id="maxLevel" class="custom-select" min="1" max="10000">  
+                </hr2>
+                <hr2 class="col-lg-12"><br></hr2>
+
+              </div>
+              <div class="input-group-append">
+                <button class="btn btn-warning" type="button" onclick="encontrarMatch();">
+                  Encontrar companheiros de equipe!
+                </button>
+              </div>
+            </form>
+
+            <div v-if="companheirosEncontrados">
+              <p>Nick dos jogadores Encontrados para jogar com você:</p>
+              <li v-for="companheiro in companheiros">
+                {{companheiro.league_name}}
+                <button class="btn btn-light" v-on:click='adicionarAmigo(companheiro.league_name)'>Adicionar Como Amigo</button>
+              </li>
+              <p v-if="semCompanheiro">Não foi encontrada nenhuma pessoa para jogar com você =( </p>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+           <div class="container-fluid" v-if="modo_tela == 'perfilUsuario'">
+             <div class="container">
+               <div class="col-md-6">
+                 {{usuarioPerfil}} <span> | Avaliacao: {{avaliacaoAmigo}}</span>
+                 <button class="btn btn-light" v-on:click="selecionaAvaliacao()" v-if="button_aval">Avaliar Jogador</button>
+                 <button class="btn btn-light" v-on:click="adicionarAvaliacao()" v-if="!button_aval">Salvar</button>
+                 <button class="btn btn-light" v-on:click="selecionaAvaliacao()" v-if="!button_aval">Cancelar</button>
+                 <hr2 class="col-mx-2" v-if="!button_aval">
+                <select name="avaliacao-usuario" id="avaliacao-usuario" class="custom-select">
+                  <option value="5">
+                    5
+                  </option>
+                  <option value="4">
+                    4
+                  </option>
+                  <option value="3">
+                    3
+                  </option>
+                  <option value="2">
+                    2
+                  </option>
+                  <option value="1">
+                    1
+                  </option>
+                </select>
+              </hr2>
+
+              <a v-for="dado in summonerElo">
+              <div class="row"> Level : {{dado.level}}</div>
+                <div class="row"> LeaguePoints : {{dado.leaguePoints}}</div>
+                <div class="row"> Rank : {{dado.rank}}</div>
+                <div class="row"> Tier : {{dado.tier}}</div>
+                <div class="row"> Fila : {{dado.queueType}}</div>
+                <div class="row"> Vitórias : {{dado.wins}}</div>
+                <div class="row"> Derrotas : {{dado.losses}}</div>
+
+              </a>
+
+            </div>
+
+            <div class="col-md-5">
+              Maestria de heróis
+              <a v-for="champion in championMastery">
+                <div class="row"> Nome do herói : {{champion.championId}}</div>
+                <div class="row"> Level : {{champion.championLevel}}</div>
+                <div class="row"> Maestria : {{champion.championPoints}}</div>
+              </a>
+            </div>
+          </div>
+           </div>
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="navbar-fixed-bottom bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span>Copyright &copy; Bonde do LOL - TIS5</span>
+            </div>
+          </div>
+        </footer>
+        <!-- End of Footer -->
+
+      </div>
+      <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">O mundo precisa de você, Invocador!</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">Caso você queira realmente sair, clique em Deslogar ):</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+            <a class="btn btn-primary" onclick="deslogar()"><font color="black">Deslogar</font></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
+  <!-- Page level plugins -->
+  <script src="vendor/chart.js/Chart.min.js"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="js/demo/chart-area-demo.js"></script>
+  <script src="js/demo/chart-pie-demo.js"></script>
+
+  <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+
+  <script src="js/app.js"></script>
+
+  <!--  <script src="node_modules/laravel-echo/dist/echo.js"></script>
+    <script src="node_modules/pusher-js/dist/web/pusher.min.js"></script>
+    <script>
+
+      import Echo from 'node_modules/laravel-echo/dist/echo.js'
+
+      window.Pusher = require('pusher-js');
+
+      window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: '12bf0a963cc50a5591d1',
+        cluster: 'us2',
+        encrypted: true
+      });
+
+      Echo.join('usuarios-online')
+              .here((users) => {
+                //
+              })
+              .joining((user) => {
+                console.log(user.name);
+              })
+              .leaving((user) => {
+                console.log(user.name);
+              });
+    </script>-->
+
+</body>
+
+</html>
